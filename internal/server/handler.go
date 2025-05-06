@@ -1,4 +1,4 @@
-package controller
+package server
 
 import "fmt"
 
@@ -10,3 +10,5 @@ func ListarPontos(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Essa rota vai listar os pontos")
 	// TODO criar fluxo para listar os pontos.
 }
+
+// TODO enviar 

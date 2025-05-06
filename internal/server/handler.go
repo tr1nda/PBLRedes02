@@ -11,4 +11,8 @@ func ListarPontos(w http.ResponseWriter, r *http.Request) {
 	// TODO criar fluxo para listar os pontos.
 }
 
-// TODO enviar 
+// TODO enviar mensagens aos outros servidores
+
+// TODO utilizar um algoritmo de consenso e transações atômicas
+
+// TODO lidar com timeouts, por exemplo, realizando uma pré-reserva por um determinado tempo

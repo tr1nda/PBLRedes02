@@ -1,6 +1,15 @@
-version: '3.8'
-
 services:
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: mqtt-broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto:/mosquitto/config
+    networks:
+      - appnet
+
   server1:
     build:
       context: .
@@ -8,10 +17,15 @@ services:
       args:
         TARGET: server
     container_name: servidor1
+    depends_on:
+      - mqtt
     ports:
       - "9001:9000"
     environment:
       - INSTANCE_ID=1
+      - MQTT_BROKER=tcp://mqtt:1883
+    networks:
+      - appnet
 
   server2:
     build:
@@ -20,10 +34,15 @@ services:
       args:
         TARGET: server
     container_name: servidor2
+    depends_on:
+      - mqtt
     ports:
       - "9002:9000"
     environment:
       - INSTANCE_ID=2
+      - MQTT_BROKER=tcp://mqtt:1883
+    networks:
+      - appnet
 
   client:
     build:
@@ -32,10 +51,18 @@ services:
       args:
         TARGET: client
     container_name: cliente
-    stdi_open: true
+    stdin_open: true
     tty: true
     depends_on:
       - server1
       - server2
+      - mqtt
     environment:
       - SERVER_ADDRESSES=servidor1:9000,servidor2:9000
+      - MQTT_BROKER=tcp://mqtt:1883
+    networks:
+      - appnet
+      
+networks:
+  appnet:
+    driver: bridge

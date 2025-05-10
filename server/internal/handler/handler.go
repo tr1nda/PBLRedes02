@@ -1,6 +1,9 @@
 package server
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Olá, este é um servidor HTTP simples em Go!")

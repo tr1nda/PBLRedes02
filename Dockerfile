@@ -1,22 +1,26 @@
 # Etapa de build
-FROM golang:1.24 AS builder
+FROM golang:1.22-alpine AS builder
 
-ARG TARGET
-
+ARG TARGET=client
 WORKDIR /app
 
+# Copia go.mod primeiro (útil para cache), mas agora também o código completo
 COPY go.mod ./
-RUN go mod download
+COPY . ./
 
-COPY . .
+# Executa o tidy agora, pois precisa analisar os imports do código
+RUN go mod tidy
 
-RUN go build -o main "./cmd/${TARGET}"
+# Compila o binário
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/$TARGET ./$TARGET/main.go
 
-# Etapa final
+# Imagem final
 FROM alpine:latest
 
-WORKDIR /app
+ARG TARGET=client
+WORKDIR /root/
 
-COPY --from=builder /app/main .
+# Copia o binário da etapa de build
+COPY --from=builder /app/bin/$TARGET /usr/local/bin/app
 
-CMD ["./main"]
+CMD ["/usr/local/bin/app"]

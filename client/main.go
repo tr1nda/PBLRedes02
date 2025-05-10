@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"math/rand"
-	"net/http"
 	"time"
 )
 
@@ -65,7 +63,8 @@ func main() {
 				fmt.Println("Erro ao codificar JSON:", err)
 				continue
 			}
-	
+
+			fmt.Printf("%#v", jsonData)
 
 		} else if escolha == 2 {
 			fmt.Println("Saindo...")

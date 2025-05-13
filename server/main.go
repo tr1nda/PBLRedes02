@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"pblredes2/pkg/shared/mqtt"
 	server "pblredes2/server/internal/handler"
+)
 
-	mqttlib "github.com/eclipse/paho.mqtt.golang"
+const (
+	topicoTeste             = "topico/teste"
+	topicoStatus            = "servers/status"
+	topicoReservaConfirmada = "reservas/confirmadas"
+	topicoReservaNegada     = "reservas/negadas"
+	topicoPontosDisponiveis = "pontos/disponiveis"
 )
 
 func main() {
@@ -24,11 +29,19 @@ func main() {
 
 	client := mqtt.Connect(broker, "server-id")
 
-	mqtt.Subscribe(client, "topico/teste", func(c mqttlib.Client, m mqttlib.Message) {
-		log.Printf("Recebido: %s", string(m.Payload()))
-	})
+	mqtt.Subscribe(client, topicoTeste, mqtt.DefaultHandler)
+	mqtt.Subscribe(client, topicoStatus, mqtt.DefaultHandler)
 
-	mqtt.Publish(client, "topico/teste", "Olá do container!")
+	mqtt.Publish(client, topicoTeste, "Olá do container!")
+	mqtt.Publish(client, topicoTeste, "Nova mensagem no broker!")
+
+	estaDisponivel := true
+	go func(disponivel bool) {
+		fmt.Printf("Disponível: %t", disponivel)
+		for i := 0; i < 5; i++ {
+			mqtt.Publish(client, topicoStatus, fmt.Sprintf("{\"id\": \"%s\",\"status\": %t", "server1", disponivel))
+		}
+	}(estaDisponivel)
 
 	// Inicia o servidor na porta 8080
 	err := http.ListenAndServe(porta, nil)

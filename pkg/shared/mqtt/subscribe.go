@@ -17,3 +17,7 @@ func Subscribe(client mqtt.Client, topic string, handler mqtt.MessageHandler) {
 		log.Println("Inscrito no tópico:", topic)
 	}
 }
+
+func DefaultHandler(client mqtt.Client, message mqtt.Message) {
+	log.Printf("Mensagem recebida no tópico %s:\n%s", message.Topic(), string(message.Payload()))
+}

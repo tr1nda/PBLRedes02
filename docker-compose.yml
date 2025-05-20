@@ -3,8 +3,8 @@ services:
     image: eclipse-mosquitto:2
     container_name: mqtt-broker
     ports:
-      - "1883:1883"
-      - "9001:9001"
+      - "1889:1883"
+      - "9006:9001"
     volumes:
       - ./mosquitto:/mosquitto/config
     networks:
@@ -20,7 +20,7 @@ services:
     depends_on:
       - mqtt
     ports:
-      - "9001:9000"
+      - "9007:9000"
     environment:
       - INSTANCE_ID=1
       - MQTT_BROKER=tcp://mqtt:1883

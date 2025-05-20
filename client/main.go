@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"math/rand"
+	"net/http"
 	"time"
 )
 
@@ -64,8 +68,18 @@ func main() {
 				continue
 			}
 
-			fmt.Printf("%#v", jsonData)
+			resp, err := http.Post("http://servidor1:9000/iniciar_rota", "application/json", bytes.NewBuffer(jsonData))
+			if err != nil {
+				log.Fatal("Erro na requisição:", err)
+			}
+			defer resp.Body.Close()
 
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Printf("Resposta do servidor:\nCode: %s\nBody: %s", resp.Status, string(body))
 		} else if escolha == 2 {
 			fmt.Println("Saindo...")
 			menu = 1

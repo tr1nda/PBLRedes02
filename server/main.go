@@ -17,9 +17,10 @@ const (
 )
 
 func main() {
-	http.HandleFunc("/", server.Handler) // Define a função que vai tratar as requisições para "/"
+	http.HandleFunc("/", server.Handler)
+	http.HandleFunc("/iniciar_rota", server.IniciarRota) // Define a função que vai tratar as requisições para "/"
 
-	porta := ":8080"
+	porta := ":9000"
 	fmt.Printf("Servidor rodando na porta %s...\n", porta)
 
 	broker := os.Getenv("MQTT_BROKER")
@@ -43,11 +44,9 @@ func main() {
 		}
 	}(estaDisponivel)
 
-	// Inicia o servidor na porta 8080
+	// Inicia o servidor na porta 9000
 	err := http.ListenAndServe(porta, nil)
 	if err != nil {
 		fmt.Println("Erro ao iniciar o servidor:", err)
 	}
-
-	select {} // impede o encerramento
 }

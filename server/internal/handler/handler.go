@@ -1,9 +1,10 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
+	"pblredes2/server/internal/model"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -14,34 +15,27 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func IniciarRota(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Recebi uma requisição!")
-	bodyBytes, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Erro ao ler body", http.StatusBadRequest)
+	fmt.Println("Iniciando rota...")
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
 		return
 	}
+
 	defer r.Body.Close()
 
-	fmt.Println("Body recebido:", string(bodyBytes))
+	var reserva model.Reserva
+	err := json.NewDecoder(r.Body).Decode(&reserva)
+	if err != nil {
+		http.Error(w, "Erro ao decodificar requisição", http.StatusBadRequest)
+		return
+	}
 
+	fmt.Printf("Reserva: %#v\n", reserva)
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Recebido com sucesso"))
-
-	// if r.Method != http.MethodPost {
-	// 	http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
-	// 	return
-	// }
-
-	// var req ReservaRequest
-	// err := json.NewDecoder(r.Body).Decode(&req)
-	// if err != nil {
-	// 	http.Error(w, "Erro ao decodificar requisição", http.StatusBadRequest)
-	// 	return
-	// }
-
-	// // Aqui você poderia chamar a lógica de reserva
-	// w.WriteHeader(http.StatusOK)
-	// json.NewEncoder(w).Encode(map[string]string{"status": "reserva recebida"})
+	json.NewEncoder(w).Encode(map[string]string{"status": "reserva recebida"})
 }
 
 func ListarPontos(w http.ResponseWriter, r *http.Request) {

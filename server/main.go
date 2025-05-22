@@ -38,7 +38,7 @@ func main() {
 
 	estaDisponivel := true
 	go func(disponivel bool) {
-		fmt.Printf("Disponível: %t", disponivel)
+		fmt.Printf("Disponível: %t\n", disponivel)
 		for i := 0; i < 5; i++ {
 			mqtt.Publish(client, topicoStatus, fmt.Sprintf("{\"id\": \"%s\",\"status\": %t", "server1", disponivel))
 		}

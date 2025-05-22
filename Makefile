@@ -7,7 +7,7 @@ build-client:
 
 # Builda somente o server
 build-server:
-	$(DOCKER_COMPOSE) build server1
+	$(DOCKER_COMPOSE) build server1 server2 server3
 
 # Builda todos (client, server, mqtt)
 build:
@@ -20,6 +20,22 @@ run-client:
 # Roda o server (Go) com terminal interativo
 run-server:
 	$(DOCKER_COMPOSE) run --rm server1
+
+# Roda o server1 com terminal interativo
+run-server1:
+	$(DOCKER_COMPOSE) run --rm server1
+
+# Roda o server2 com terminal interativo
+run-server2:
+	$(DOCKER_COMPOSE) run --rm server2
+
+# Roda o server3 com terminal interativo
+run-server3:
+	$(DOCKER_COMPOSE) run --rm server3
+
+# Roda todos os servers (em background)
+run-servers:
+	$(DOCKER_COMPOSE) up server1 server2 server3
 
 # Sobe tudo: mqtt + client + server (em background)
 up:

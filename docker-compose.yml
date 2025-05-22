@@ -82,9 +82,10 @@ services:
     depends_on:
       - server1
       - server2
+      - server3
       - mqtt
     environment:
-      - SERVER_ADDRESSES=servidor1:9000,servidor2:9000
+      - SERVER_ADDRESSES=servidor1:9000,servidor2:9000,servidor3:9000
       - MQTT_BROKER=tcp://mqtt:1883
     networks:
       - appnet

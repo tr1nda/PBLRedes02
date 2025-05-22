@@ -1,9 +1,30 @@
 package mqtt
 
 import (
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"log"
+	"os"
+
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
+
+const (
+	TopicoHealthCheck       = "healthcheck/servers"
+	TopicoStatus            = "servers/status"
+	TopicoReservaConfirmada = "reservas/confirmadas"
+	TopicoReservaNegada     = "reservas/negadas"
+	TopicoPontosDisponiveis = "pontos/disponiveis"
+)
+
+var Broker = ""
+
+func StartBroker() {
+	broker := os.Getenv("MQTT_BROKER")
+	if broker == "" {
+		broker = "tcp://mqtt:1883"
+	}
+
+	Broker = broker
+}
 
 // Connect cria um novo cliente MQTT e conecta ao broker
 func Connect(brokerURL, clientID string) mqtt.Client {

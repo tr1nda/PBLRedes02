@@ -14,7 +14,17 @@ import (
 
 const (
 	Server1         = "http://servidor1:9000/"
+	Server2         = "http://servidor2:9000/"
+	Server3         = "http://servidor3:9000/"
 	IniciarRotaPath = "iniciar_rota"
+)
+
+var (
+	servers = map[int]string{
+		1: Server1,
+		2: Server2,
+		3: Server3,
+	}
 )
 
 // TODO: criar função que "configure" a forma que os dados vão ser enviados na requisição
@@ -31,7 +41,7 @@ func gerarPlaca() string {
 	return string(placa)
 }
 
-func IniciarRota() {
+func IniciarRota() []model.PontoRecarga {
 	var origem int
 	var destino int
 	fmt.Println("Vamos iniciar sua rota!")
@@ -56,16 +66,24 @@ func IniciarRota() {
 		fmt.Println("Erro ao codificar JSON:", err)
 	}
 
-	fmt.Printf("O QUE ESTÁ SENDO ENVIADO: %s", string(jsonData))
-	endpoint := fmt.Sprintf("%s%s", Server1, IniciarRotaPath)
+	endpoint := fmt.Sprintf("%s%s", servers[origem], IniciarRotaPath)
+	DoRequest(servers[origem], []byte{})
 	response, err := DoRequest(endpoint, jsonData)
 	if err != nil {
 		log.Fatal("Erro na requisição")
 	}
-	fmt.Printf("O QUE ESTÁ SENDO RECEBIDO: %s", string(response))
+
+	pontosRecarga := []model.PontoRecarga{}
+	err = json.Unmarshal(response, &pontosRecarga)
+	if err != nil {
+		fmt.Println("\nNão foi possível resolver o body da resposta")
+	}
+	return pontosRecarga
 }
 
 func DoRequest(url string, body []byte) ([]byte, error) {
+	fmt.Println("\nENDPOINT: ", url)
+	fmt.Println("BODY: ", string(body))
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(body))
 	if err != nil {
 		log.Fatal("Erro na requisição:", err)

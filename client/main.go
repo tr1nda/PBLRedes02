@@ -14,7 +14,10 @@ func main() {
 		fmt.Scanln(&escolha)
 
 		if escolha == 1 {
-			client.IniciarRota()
+			pontos := client.IniciarRota()
+			for _, ponto := range pontos {
+				fmt.Printf("[%s] Região %s\n", ponto.ID, ponto.Regiao)
+			}
 		} else if escolha == 2 {
 			fmt.Println("Saindo...")
 			menu = 1

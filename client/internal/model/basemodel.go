@@ -10,3 +10,9 @@ type ReservaRequest struct {
 	Destino int   `json:"destino"`
 	Carro   Carro `json:"carro"`
 }
+
+type PontoRecarga struct {
+	ID     string
+	Regiao string
+	Fila   []string
+}

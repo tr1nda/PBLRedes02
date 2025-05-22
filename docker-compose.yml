@@ -24,6 +24,9 @@ services:
     environment:
       - INSTANCE_ID=1
       - MQTT_BROKER=tcp://mqtt:1883
+      - JSON_FILE=pontos1.json 
+    volumes:
+      - ./data:/app/data
     networks:
       - appnet
 
@@ -41,6 +44,29 @@ services:
     environment:
       - INSTANCE_ID=2
       - MQTT_BROKER=tcp://mqtt:1883
+      - JSON_FILE=pontos2.json
+    volumes:
+      - ./data:/app/data
+    networks:
+      - appnet
+
+  server3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TARGET: server
+    container_name: servidor3
+    depends_on:
+      - mqtt
+    ports:
+      - "9003:9000"
+    environment:
+      - INSTANCE_ID=3
+      - MQTT_BROKER=tcp://mqtt:1883
+      - JSON_FILE=pontos3.json 
+    volumes:
+      - ./data:/app/data
     networks:
       - appnet
 

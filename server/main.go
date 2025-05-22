@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"pblredes2/pkg/shared/mqtt"
 	server "pblredes2/server/internal/handler"
 )
@@ -16,7 +19,48 @@ const (
 	topicoPontosDisponiveis = "pontos/disponiveis"
 )
 
+type PontoRecarga struct {
+	ID     string
+	Regiao string
+	Fila   []string
+}
+
+// Função para carregar os jsons da pasta data
+func CarregarPontos(path string) ([]PontoRecarga, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var pontos []PontoRecarga
+	err = json.Unmarshal(data, &pontos)
+	if err != nil {
+		return nil, err
+	}
+
+	return pontos, nil
+}
+
 func main() {
+	// Lê nome do arquivo da variável de ambiente
+	jsonFile := os.Getenv("JSON_FILE")
+	if jsonFile == "" {
+		log.Fatal("Variável de ambiente JSON_FILE não foi definida")
+	}
+
+	// Caminho dentro do container
+	fullPath := filepath.Join("data", jsonFile)
+
+	pontos, err := CarregarPontos(fullPath)
+	if err != nil {
+		log.Fatalf("Erro ao carregar pontos de recarga: %v", err)
+	}
+
+	// Debug: imprime os pontos carregados
+	for _, p := range pontos {
+		fmt.Printf("Ponto: %s | Região: %s | Fila: %v\n", p.ID, p.Regiao, p.Fila)
+	}
+
 	http.HandleFunc("/", server.Handler)
 	http.HandleFunc("/iniciar_rota", server.IniciarRota) // Define a função que vai tratar as requisições para "/"
 
@@ -45,8 +89,8 @@ func main() {
 	}(estaDisponivel)
 
 	// Inicia o servidor na porta 9000
-	err := http.ListenAndServe(porta, nil)
-	if err != nil {
-		fmt.Println("Erro ao iniciar o servidor:", err)
+	err2 := http.ListenAndServe(porta, nil)
+	if err2 != nil {
+		fmt.Println("Erro ao iniciar o servidor:", err2)
 	}
 }

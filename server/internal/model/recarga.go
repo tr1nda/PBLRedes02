@@ -11,6 +11,7 @@ import (
 type PontoRecarga struct {
 	ID     string
 	Regiao string
+	Nome   string
 	Fila   []string
 }
 

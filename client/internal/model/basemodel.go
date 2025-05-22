@@ -14,5 +14,11 @@ type ReservaRequest struct {
 type PontoRecarga struct {
 	ID     string
 	Regiao string
+	Nome   string
 	Fila   []string
+}
+
+type ReservaPontosRequest struct {
+	Carro           Carro          `json:"carro"`
+	PontosDeRecarga []PontoRecarga `json:"pontos"`
 }

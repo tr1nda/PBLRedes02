@@ -115,6 +115,7 @@ func ListarPontos(w http.ResponseWriter, r *http.Request) {
 
 	pontosDiponiveis := model.ListarPontosDisponiveis()
 	consulta.QtdPontos -= 1
+	fmt.Printf("\nQTD PONTOS: %d\n", consulta.QtdPontos)
 	novosPontos := []model.PontoRecarga{}
 	if consulta.QtdPontos > 0 {
 		currentID := os.Getenv("INSTANCE_ID")
@@ -140,6 +141,25 @@ func ListarPontos(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(pontosDiponiveis)
+}
+
+func Reservar(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Realizando reserva a partir do servidor %s", os.Getenv("INSTANCE_ID"))
+
+	defer r.Body.Close()
+
+	var pontosParaReserva []model.ReservaPontos
+	err := json.NewDecoder(r.Body).Decode(pontosParaReserva)
+	if err != nil {
+		http.Error(w, "Erro ao decodificar requisição", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Printf("RESERVA: %#v", pontosParaReserva)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode("Reserva")
 }
 
 // TODO enviar mensagens aos outros servidores

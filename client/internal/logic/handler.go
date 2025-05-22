@@ -9,6 +9,8 @@ import (
 	"math/rand"
 	"net/http"
 	"pblredes2/client/internal/model"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -41,7 +43,7 @@ func gerarPlaca() string {
 	return string(placa)
 }
 
-func IniciarRota() []model.PontoRecarga {
+func IniciarRota() (model.Carro, []model.PontoRecarga) {
 	var origem int
 	var destino int
 	fmt.Println("Vamos iniciar sua rota!")
@@ -67,7 +69,7 @@ func IniciarRota() []model.PontoRecarga {
 	}
 
 	endpoint := fmt.Sprintf("%s%s", servers[origem], IniciarRotaPath)
-	DoRequest(servers[origem], []byte{})
+	// DoRequest(servers[origem], []byte{})
 	response, err := DoRequest(endpoint, jsonData)
 	if err != nil {
 		log.Fatal("Erro na requisição")
@@ -78,7 +80,32 @@ func IniciarRota() []model.PontoRecarga {
 	if err != nil {
 		fmt.Println("\nNão foi possível resolver o body da resposta")
 	}
-	return pontosRecarga
+	return carro, pontosRecarga
+}
+
+func ReservarPontos(carro model.Carro, pontosStr string, pontos []model.PontoRecarga) {
+	var pontosSelecionados []model.PontoRecarga
+	pontosIdx := convertPontos(pontosStr)
+	for _, ponto := range pontosIdx {
+		pontosSelecionados = append(pontosSelecionados, pontos[ponto])
+	}
+
+	server, err := strconv.Atoi(pontosSelecionados[0].Regiao)
+	if err != nil {
+		fmt.Printf("Não foi possível obter o servidor: %s", err)
+	}
+
+	reserva := model.ReservaPontosRequest{
+		Carro:           carro,
+		PontosDeRecarga: pontosSelecionados,
+	}
+
+	body, err := json.Marshal(reserva)
+	if err != nil {
+		fmt.Printf("Não foi possível resolver o body da requisição: %s", err)
+	}
+	endpoint := fmt.Sprintf("%s%s", servers[server], "reservar_pontos")
+	DoRequest(endpoint, body)
 }
 
 func DoRequest(url string, body []byte) ([]byte, error) {
@@ -98,4 +125,18 @@ func DoRequest(url string, body []byte) ([]byte, error) {
 
 	fmt.Printf("\nResposta do servidor:\nCode: %s\nBody: %s", resp.Status, string(body))
 	return body, err
+}
+
+func convertPontos(pontos string) []int {
+	pontosStr := strings.Fields(pontos)
+	var indexes []int
+	for _, ponto := range pontosStr {
+		idx, err := strconv.Atoi(ponto)
+		if err != nil {
+			fmt.Printf("Não foi possível converter o índice: %s", err)
+		}
+		indexes = append(indexes, idx)
+	}
+
+	return indexes
 }

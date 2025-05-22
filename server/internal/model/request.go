@@ -14,3 +14,8 @@ type Reserva struct {
 type PontosConsulta struct {
 	QtdPontos int `json:"quantidade_pontos"`
 }
+
+type ReservaPontos struct {
+	Carro  Carro          `json:"carro"`
+	Pontos []PontoRecarga `json:"pontos"`
+}

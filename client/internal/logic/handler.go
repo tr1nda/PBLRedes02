@@ -19,6 +19,7 @@ const (
 	Server2         = "http://servidor2:9000/"
 	Server3         = "http://servidor3:9000/"
 	IniciarRotaPath = "iniciar_rota"
+	ReservarPath    = "reservar_pontos"
 )
 
 var (
@@ -33,7 +34,7 @@ var (
 
 // TODO: criar função que envie a requisição para o servidor, informando o método HTTP
 // o body ou parâmetros da URL, e o endpoint ao qual será feito essa requisição
-func gerarPlaca() string {
+func GerarPlaca() string {
 	rand.Seed(time.Now().UnixNano())
 	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	placa := make([]rune, 6)
@@ -43,7 +44,7 @@ func gerarPlaca() string {
 	return string(placa)
 }
 
-func IniciarRota() (model.Carro, []model.PontoRecarga) {
+func IniciarRota(carro model.Carro) []model.PontoRecarga {
 	var origem int
 	var destino int
 	fmt.Println("Vamos iniciar sua rota!")
@@ -52,12 +53,7 @@ func IniciarRota() (model.Carro, []model.PontoRecarga) {
 	fmt.Println("Qual a Região de Destino da viagem:")
 	fmt.Scanln(&destino)
 
-	carro := model.Carro{
-		Bateria: rand.Intn(3),
-		Placa:   gerarPlaca(),
-	}
-
-	mensagem := model.ReservaRequest{
+	mensagem := model.RotaRequest{
 		Origem:  origem,
 		Destino: destino,
 		Carro:   carro,
@@ -69,7 +65,6 @@ func IniciarRota() (model.Carro, []model.PontoRecarga) {
 	}
 
 	endpoint := fmt.Sprintf("%s%s", servers[origem], IniciarRotaPath)
-	// DoRequest(servers[origem], []byte{})
 	response, err := DoRequest(endpoint, jsonData)
 	if err != nil {
 		log.Fatal("Erro na requisição")
@@ -80,7 +75,7 @@ func IniciarRota() (model.Carro, []model.PontoRecarga) {
 	if err != nil {
 		fmt.Println("\nNão foi possível resolver o body da resposta")
 	}
-	return carro, pontosRecarga
+	return pontosRecarga
 }
 
 func ReservarPontos(carro model.Carro, pontosStr string, pontos []model.PontoRecarga) {
@@ -104,13 +99,12 @@ func ReservarPontos(carro model.Carro, pontosStr string, pontos []model.PontoRec
 	if err != nil {
 		fmt.Printf("Não foi possível resolver o body da requisição: %s", err)
 	}
-	endpoint := fmt.Sprintf("%s%s", servers[server], "reservar_pontos")
+	endpoint := fmt.Sprintf("%s%s", servers[server], ReservarPath)
 	DoRequest(endpoint, body)
 }
 
 func DoRequest(url string, body []byte) ([]byte, error) {
-	fmt.Println("\nENDPOINT: ", url)
-	fmt.Println("BODY: ", string(body))
+	fmt.Printf("\nRequisição:\nEndpoint: %s\nBody: %s\n", url, string(body))
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(body))
 	if err != nil {
 		log.Fatal("Erro na requisição:", err)

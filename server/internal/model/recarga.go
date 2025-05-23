@@ -9,10 +9,12 @@ import (
 )
 
 type PontoRecarga struct {
-	ID     string
-	Regiao string
-	Nome   string
-	Fila   []string
+	ID           string
+	Regiao       string
+	Nome         string
+	Fila         []string
+	PreReservado bool
+	Reservado    bool
 }
 
 var (
@@ -56,4 +58,16 @@ func ListarPontosDisponiveis() []PontoRecarga {
 	}
 
 	return pontosDisponiveis
+}
+
+// Adiciona o carro na fila e retorna a posição
+func EntrarNaFila(placa, id string) int {
+	for _, ponto := range Pontos {
+		if ponto.ID == id {
+			ponto.Fila = append(ponto.Fila, placa)
+			return len(ponto.Fila)
+		}
+	}
+
+	return 0
 }

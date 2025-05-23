@@ -5,7 +5,7 @@ type Carro struct {
 	Placa   string `json:"placa"`
 }
 
-type ReservaRequest struct {
+type RotaRequest struct {
 	Origem  int   `json:"origem"`
 	Destino int   `json:"destino"`
 	Carro   Carro `json:"carro"`

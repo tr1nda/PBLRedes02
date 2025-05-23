@@ -29,6 +29,9 @@ func main() {
 	http.HandleFunc("/iniciar_rota", server.IniciarRota)
 	http.HandleFunc("/verificar_pontos", server.ListarPontos)
 	http.HandleFunc("/reservar_pontos", server.Reservar)
+	http.HandleFunc("/pre_reserva", server.PreReservar)
+	http.HandleFunc("/confirmar_reserva", server.ConfirmarReserva)
+	http.HandleFunc("/cancelar_reserva", server.CancelarReserva)
 
 	porta := ":9000"
 	fmt.Printf("Servidor rodando na porta %s...\n", porta)

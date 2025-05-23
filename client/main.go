@@ -3,8 +3,18 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	client "pblredes2/client/internal/logic"
+	"pblredes2/client/internal/model"
+)
+
+var (
+	Placa       = client.GerarPlaca()
+	CarroClient = model.Carro{
+		Placa:   Placa,
+		Bateria: rand.Intn(3),
+	}
 )
 
 func main() {
@@ -16,7 +26,7 @@ func main() {
 		fmt.Scanln(&escolha)
 
 		if escolha == 1 {
-			carro, pontos := client.IniciarRota()
+			pontos := client.IniciarRota(CarroClient)
 			var pontosEscolhidos string
 			scanner := bufio.NewScanner(os.Stdin)
 			fmt.Println("Escolha os pontos que deseja reservar, separados por espaço:")
@@ -27,7 +37,9 @@ func main() {
 				pontosEscolhidos = scanner.Text()
 			}
 
-			client.ReservarPontos(carro, pontosEscolhidos, pontos)
+			client.ReservarPontos(CarroClient, pontosEscolhidos, pontos)
+		} else if escolha == 2 {
+
 		} else if escolha == 3 {
 			fmt.Println("Saindo...")
 			menu = 1
